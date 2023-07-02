@@ -117,6 +117,15 @@ function chatShow() {
     }
 }
 
+function whiteBoardShow() {
+  // window.open('/board')
+  socket.emit('openBoard')
+}
+
+socket.on('boardOpen', () => {
+  boardWindow = window.open('/board', "boardWindow")
+})
+
 function leave () {
   window.location.href = '/logout';
 }
@@ -152,20 +161,3 @@ const setPlayVideo = () => {
   document.querySelector('.main__video_button').innerHTML = html;
 }
 
-
-//canvas stuff
-let canvas = document.getElementById('canvas');
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let context = canvas.getContext('2d');
-
-let mouseX;
-let mouseY;
-
-window.onmousemove = (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    console.log({ mouseX, mouseY });
-}
