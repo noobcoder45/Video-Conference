@@ -11,15 +11,22 @@ const peerServer = ExpressPeerServer(server, {
 });
 const { v4: uuidV4 } = require('uuid')
 
+process.env.NODE_ENV = 'development';
+
 app.use('/peerjs', peerServer);
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
+// app.get('/', (_, res) => {
+//   res.redirect(`/${uuidV4()}`)
+// })
 app.get('/', (req, res) => {
-  res.redirect(`/${uuidV4()}`)
+  console.log("hi")
+  res.render('whiteBoard')
 })
-app.get('/logout', (req, res) => {
+
+app.get('/logout', (_, res) => {
   res.render('logout')
 })
 app.get('/:room', (req, res) => {
