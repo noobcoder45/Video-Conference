@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteBoard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
+        integrity="sha512-Z6C1p1NIexPj5MsVUunW4pg7uMX6/TT3CUVldmjXx2kpip1eZcrAnxIusDxyFIikyM9A61zOVNgvLr/TGudOQg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        .white_board_body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #8d8d8d;
+        }
+
+        .white_board_canvas {
+            display: block;
+            background-color: #fff;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .white_board_toolbar {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        .white_board_toolbar button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ccc;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .white_board_toolbar button.active {
+            background-color: #999;
+        }
+    </style>
+    <script>var io = io.connect()</script>
+    <script type="text/javascript" defer>
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById('canvas');
+
+            if (canvas) {
+                canvas.width = 0.98 * window.innerWidth;
+                canvas.height = 0.98 * window.innerHeight;
+            }
+
+            let context;
+
+            if (canvas){
+                context = canvas.getContext('2d');
+                context.lineCap = "round";
+                context.lineWidth = 5;
+            }
+
+            let mouseX;
+            let mouseY;
+
+            let mouseDown = false;
+            let tool = 'pencil';
+
+            window.onmousedown = (e) => {
+                if (tool === 'pencil') {
+                    context.beginPath();
+                    context.moveTo(mouseX-15, mouseY-50);
+                    io.emit('mouseDown', { x: mouseX, y: mouseY });
+                }
+                mouseDown = true;
+            }
+            window.onmouseup = (e) => {
+                mouseDown = false;
+            }
+
+            io.on('onDraw', ({ x, y }) => {
+                if (tool === 'pencil') {
+                    context.lineTo(x-15, y-50);
+                    context.stroke();
+                }
+            })
+
+            io.on('onErase', ({ x,y }) => {
+                context.clearRect(x - 30, y - 70, 30, 30);                
+            })
+
+            io.on('onDown', ({ x, y }) => {
+                if (tool === 'pencil') {
+                    context.beginPath();
+                    context.moveTo(x-15, y-50);
+                } else if (tool === 'eraser') {
+                    context.clearRect(x-30, y-70 , 30, 30);
+                }
+            })
+
+            io.on('onClear', () => {
+                context.clearRect(0, 0, canvas.width, canvas.height)
+            })
+
+            window.onmousemove = (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (mouseDown) {
+                    if (tool === 'pencil') {
+                        io.emit('draw', { x: mouseX, y: mouseY });
+                        context.lineTo(mouseX-15, mouseY-50);
+                        context.stroke();
+                    } else if (tool === 'eraser') {
+                        io.emit('erase', { x: mouseX, y: mouseY });
+                        context.clearRect(mouseX - 30, mouseY - 70, 30, 30);
+                    }
+                }
+
+            }
+
+            const pencilButton = document.getElementById('pencilButton');
+            const eraserButton = document.getElementById('eraserButton');
+            const clearButton = document.getElementById('clearButton');
+
+            pencilButton.addEventListener('click', () => {
+                tool = 'pencil';
+                pencilButton.classList.add('active');
+                eraserButton.classList.remove('active');
+            });
+
+            eraserButton.addEventListener('click', () => {
+                tool = 'eraser';
+                eraserButton.classList.add('active');
+                pencilButton.classList.remove('active');
+            });
+
+            clearButton.addEventListener('click', () => {
+                context.clearRect(0, 0, canvas.width, canvas.height)
+                io.emit('clear')
+            })
+
+        });
+    </script>
+</head>
+
+<body class="white_board_body">
+    <div class="white_board_toolbar">
+        <button id="pencilButton" class="active">Pencil</button>
+        <button id="eraserButton">Eraser</button>
+        <button id="clearButton">Clear</button>
+    </div>
+    <canvas id="canvas" class="white_board_canvas"></canvas>
+</body>
+
+</html>

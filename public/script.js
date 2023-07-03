@@ -117,6 +117,15 @@ function chatShow() {
     }
 }
 
+function whiteBoardShow() {
+  // window.open('/board')
+  socket.emit('openBoard')
+}
+
+socket.on('boardOpen', () => {
+  boardWindow = window.open(`/board/${ROOM_ID}`, "boardWindow")
+})
+
 function leave () {
   window.location.href = '/logout';
 }
