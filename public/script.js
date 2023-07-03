@@ -127,7 +127,7 @@ socket.on('boardOpen', () => {
 })
 
 function leave () {
-  window.location.href = '/logout';
+  window.location.href = '/';
 }
 const setMuteButton = () => {
   const html = `

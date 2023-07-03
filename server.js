@@ -23,8 +23,13 @@ app.use(express.static('public'))
 
 //
 app.get('/', (req, res) => {
-  res.render('pages/auth')
+  res.render('home')
+  //res.render('pages/auth')
   // res.redirect(`/${uuidV4()}`)
+})
+
+app.get('/room', (req,res) => {
+  res.redirect(`/${uuidV4()}`)
 })
 
 app.get('/board/:room', (_, res) => {
