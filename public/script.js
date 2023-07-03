@@ -123,7 +123,7 @@ function whiteBoardShow() {
 }
 
 socket.on('boardOpen', () => {
-  boardWindow = window.open('/board', "boardWindow")
+  boardWindow = window.open(`/board/${ROOM_ID}`, "boardWindow")
 })
 
 function leave () {

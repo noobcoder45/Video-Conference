@@ -1,9 +1,8 @@
-
 const canvas = document.getElementById('canvas');
 
 if(canvas){
     canvas.width = 0.98 * window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = 0.98 * window.innerHeight;
 }
 
 var io = io.connect()

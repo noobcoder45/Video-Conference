@@ -22,7 +22,7 @@ app.get('/', (_, res) => {
   res.redirect(`/${uuidV4()}`)
 })
 
-app.get('/board', (_, res) => {
+app.get('/board/:room', (_, res) => {
   res.render('whiteBoard')
 })
 
@@ -67,6 +67,22 @@ io.on('connect', socket => {
       }
     });
   });
+
+  socket.on('erase', (data) => {
+    connections.forEach((con) => {
+      if(con.id !== socket.id) {
+        con.emit('onErase', { x: data.x, y: data.y })
+      }
+    })
+  })
+
+  socket.on('clear', () => {
+    connections.forEach((con) => {
+      if(con.id !== socket.id) {
+        con.emit('onClear')
+      }
+    })
+  })
 
   socket.on('mouseDown', (data) => {
     connections.forEach((con) => {
