@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const session=require('express-session')
+const PORT = process.env.PORT || 3030;
 // const cors = require('cors')
 // app.use(cors())
 const server = require('http').Server(app)
@@ -165,4 +166,6 @@ app.get('/auth/google/callback',
     res.render('home')
   });
 
-server.listen(3030)
+server.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});
