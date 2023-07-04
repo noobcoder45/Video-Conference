@@ -19,12 +19,10 @@ app.use('/peerjs', peerServer);
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
-//authentication code
 
-//
 app.get('/', (req, res) => {
-  res.render('home')
-  //res.render('pages/auth')
+  // res.render('home')
+  res.render('pages/auth')
   // res.redirect(`/${uuidV4()}`)
 })
 
@@ -65,6 +63,11 @@ io.on('connect', socket => {
       })
     })
 
+    // socket.on('closeBoard',()=>{
+    //   connections.forEach((con)=>{
+    //     con.emit('boardClose')
+    //   })
+    // })
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
     })
@@ -159,7 +162,7 @@ app.get('/auth/google/callback',
   function(req, res) {
     // Successful authentication, redirect success.
     //res.redirect('/success');
-    res.redirect(`/${uuidV4()}`)
+    res.render('home')
   });
 
 server.listen(3030)
